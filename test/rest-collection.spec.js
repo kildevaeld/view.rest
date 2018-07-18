@@ -10,7 +10,6 @@ describe('withRestCollection', () => {
         const Collection = withRestCollection(ModelCollection);
 
         const col = new Collection();
-        console.log(col);
 
     });
 

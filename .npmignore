@@ -1,6 +1,7 @@
 example/
 src/
 test/
+scripts/
 .babelrc
 index.js
 rollup.config.js
