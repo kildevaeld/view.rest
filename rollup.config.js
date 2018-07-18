@@ -12,12 +12,12 @@ module.exports = [
         output: [{
             file: pkg.browser,
             format: 'umd',
-            name: 'viewjs.models',
+            name: 'viewjs.rest',
             globals: {
                 '@viewjs/events': 'viewjs.events',
                 '@viewjs/utils': 'viewjs.utils',
                 '@viewjs/models': 'viewjs.models',
-                'fetchain': "fetchaing"
+                'fetchain': "fetchain"
             }
         }, {
             file: pkg.module,
@@ -33,45 +33,14 @@ module.exports = [
             typescript({
                 typescript: require('typescript')
             }),
-            resolve(), // so Rollup can find `ms`
-            commonjs(), // so Rollup can convert `ms` to an ES module
+            // resolve(), // so Rollup can find `ms`
+            // commonjs(), // so Rollup can convert `ms` to an ES module
             babel({
                 //presets: ['env'],
                 exclude: ['node_modules/**'],
-                //babelrc: false,
-                // presets: [
-                //     ["env", {
-                //         "modules": false
-                //     }]
-                // ],
-                // plugins: [
-                //     'external-helpers'
-                // ],
+
             })
         ]
     },
 
-    // CommonJS (for Node) and ES module (for bundlers) build.
-    // (We could have three entries in the configuration array
-    // instead of two, but it's quicker to generate multiple
-    // builds from a single configuration where possible, using
-    // the `targets` option which can specify `dest` and `format`)
-    /*{
-        entry: 'src/main.js',
-        external: ['ms'],
-        targets: [{
-                dest: pkg.main,
-                format: 'cjs'
-            },
-            {
-                dest: pkg.module,
-                format: 'es'
-            }
-        ],
-        plugins: [
-            babel({
-                exclude: ['node_modules/**']
-            })
-        ]
-    }*/
 ];
