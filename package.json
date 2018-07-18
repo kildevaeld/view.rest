@@ -1,0 +1,43 @@
+{
+  "name": "@viewjs/rest",
+  "version": "0.5.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node ./node_modules/.bin/tsc; node ./node_modules/.bin/rollup -c",
+    "test": "node ./node_modules/.bin/mocha -r should -R spec"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@viewjs/events": "^1.1.0",
+    "@viewjs/models": "^1.1.0",
+    "@viewjs/utils": "^1.5.0",
+    "fetchain": "^0.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-beta.52",
+    "@babel/preset-env": "^7.0.0-beta.52",
+    "@types/koa": "^2.0.46",
+    "@types/koa-bodyparser": "^5.0.1",
+    "@types/koa-router": "^7.0.30",
+    "@types/mocha": "^5.2.4",
+    "@types/should": "^13.0.0",
+    "json-fs-store": "^1.0.1",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-router": "^7.4.0",
+    "mocha": "^5.2.0",
+    "rollup": "^0.62.0",
+    "rollup-plugin-babel": "^4.0.0-beta.7",
+    "rollup-plugin-commonjs": "^9.1.3",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "should": "^13.2.1",
+    "sinon": "^6.1.3",
+    "typescript": "^2.9.2",
+    "uniqid": "^5.0.3"
+  },
+  "browser": "dist/view.rest.js",
+  "module": "dist/view.rest.es6"
+}
