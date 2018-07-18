@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "node ./node_modules/.bin/tsc; node ./node_modules/.bin/rollup -c",
-    "test": "node ./node_modules/.bin/mocha -r should -R spec"
+    "test": "node ./node_modules/.bin/mocha -r should -R spec",
+    "prepare": "node ./node_modules/.bin/gulp build",
+    "prepublishOnly": "node ./node_modules/.bin/gulp test"
   },
   "author": "",
   "license": "MIT",
@@ -23,6 +25,10 @@
     "@types/koa-router": "^7.0.30",
     "@types/mocha": "^5.2.4",
     "@types/should": "^13.0.0",
+    "gulp": "^3.9.1",
+    "gulp-bump": "^3.1.1",
+    "gulp-mocha": "^6.0.0",
+    "gulp-typescript": "^5.0.0-alpha.3",
     "json-fs-store": "^1.0.1",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
