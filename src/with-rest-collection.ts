@@ -22,7 +22,7 @@ export interface IRestCollection<TModel extends IRestModel & Model> {
     fetch(options?: RestCollectionFetchOptions): Promise<any>;
 }
 
-export function withRestCollection<T extends Constructor<ModelCollection<TModel>>, TModel extends IRestModel & Model>(Base: T, baseURL?: string, storage?: IRestBackend): T & Constructor<IRestCollection> {
+export function withRestCollection<T extends Constructor<ModelCollection<TModel>>, TModel extends IRestModel & Model>(Base: T, baseURL?: string, storage?: IRestBackend): T & Constructor<IRestCollection<TModel>> {
     return class extends Base {
 
         private _listener = new (withEventListener(BaseObject));
