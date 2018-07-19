@@ -1,10 +1,11 @@
 
 import { Constructor, triggerMethodOn, Base as BaseObject } from '@viewjs/utils';
-import { Model/*, ModelConstructor */, ModelCollection } from '@viewjs/models';
+import { Model/*, ModelConstructor */, ModelCollection, ModelEvents } from '@viewjs/models';
 import { createError, RestErrorCode } from './errors';
 import { backend, IRestRequest, IRestBackend } from './backend';
 import { IRestModel } from './with-rest-model';
 import { withEventListener } from '@viewjs/events';
+import { RestEvents } from './types';
 
 export interface RestCollectionSaveOptions { }
 
@@ -14,10 +15,10 @@ export interface RestCollectionFetchOptions {
 
 export interface RestCollectionDeleteOptions { }
 
-export interface IRestCollection {
+export interface IRestCollection<TModel extends IRestModel & Model> {
     //baseURL: string;
     //backend: IRestBackend;
-    create(input: any | object): Promise<any>;
+    create(input: any | object): Promise<TModel>;
     fetch(options?: RestCollectionFetchOptions): Promise<any>;
 }
 
@@ -29,8 +30,8 @@ export function withRestCollection<T extends Constructor<ModelCollection<TModel>
         baseURL = baseURL || '';
         backend = storage || backend;
 
-        create(input: TModel | object): Promise<any> {
-            const model = this.createModel(input);
+        create(input: TModel | object): Promise<TModel> {
+            const model = this.ensureModel(input);
 
             if (!model.baseURL) model.baseURL = this.baseURL;
             else if (!model.backend) model.backend = this.backend;
@@ -42,13 +43,16 @@ export function withRestCollection<T extends Constructor<ModelCollection<TModel>
 
             return promise.then(() => {
                 this.push(model);
+                return model;
             });
 
         }
 
-
         fetch(options: RestCollectionFetchOptions = {}): Promise<any> {
+
             if (!this.baseURL) Promise.reject(createError(RestErrorCode.MissingURL, `url not spicified on ${String(this)}`));
+
+            this.trigger(RestEvents.BeforeFetch);
 
             options = Object.assign({
                 method: 'reset'
@@ -59,19 +63,25 @@ export function withRestCollection<T extends Constructor<ModelCollection<TModel>
                 url: this.baseURL
             }).then(resp => {
 
-                let result = this.parseRestResult(resp);
+                const result = this.parseRestResult(resp);
                 if (options.method == 'reset') {
                     this.reset(result);
                 } else {
                     result.map(m => this.push(m));
                 }
 
+                this.trigger(RestEvents.Fetch);
+
             });
 
         }
 
         save() {
-            return Promise.all(this.map(m => m.save()));
+            this.trigger(RestEvents.BeforeSave)
+            return Promise.all(this.map(m => m.save())).then(() => {
+                this.trigger(RestEvents.Save);
+                return [...this];
+            });
         }
 
         parseRestResult(data: any): any[] {
@@ -87,7 +97,11 @@ export function withRestCollection<T extends Constructor<ModelCollection<TModel>
 
 
         protected didAddModel(model: TModel) {
-            this._listener.listenToOnce(model, 'delete', () => {
+            this._listener.listenToOnce(model, RestEvents.BeforeDelete, () => {
+                this.trigger(RestEvents.BeforeDelete, model);
+            })
+            this._listener.listenToOnce(model, RestEvents.Delete, () => {
+                this.trigger(RestEvents.Delete, model);
                 this.remove(model);
             }, this);
         }

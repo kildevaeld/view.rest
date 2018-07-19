@@ -4,7 +4,7 @@ import { Model/*, ModelConstructor */, ModelCollection, MetaKeys } from '@viewjs
 import { createError, RestErrorCode } from './errors';
 import { backend, IRestRequest, IRestBackend } from './backend';
 import { urlAppend } from './utils';
-
+import { RestEvents } from './types';
 export interface RestModelSaveOptions {
     force?: boolean;
 }
@@ -56,9 +56,12 @@ export function withRestModel<T extends Constructor<Model>>(Base: T, baseURL?: s
                 req.method = 'PUT';
             }
 
+            this.trigger(RestEvents.BeforeSave, req);
+
             return this.backend!.request(req, this.toJSON()).then(resp => {
                 this.set(resp);
                 this.changes = void 0;
+                this.trigger(RestEvents.Save, req, resp);
             });
 
         }
@@ -72,13 +75,13 @@ export function withRestModel<T extends Constructor<Model>>(Base: T, baseURL?: s
                 url: urlAppend(this.baseURL, this.id)
             }
 
-            this.trigger('before:fetch', req);
+            this.trigger(RestEvents.BeforeFetch, req);
 
             return this.backend!.request(req)
                 .then(resp => {
                     this.set(resp);
-                    this.trigger('fetch', resp);
                     this.changes = void 0;
+                    this.trigger(RestEvents.Fetch, req, resp);
                 });
 
         }
@@ -87,11 +90,13 @@ export function withRestModel<T extends Constructor<Model>>(Base: T, baseURL?: s
             if (!this.id) return Promise.reject(createError(`cannot delete a model with no id`));
             if (!this.baseURL) throw createError(RestErrorCode.MissingURL, `url not spicified on ${String(this)}`);
 
+            this.trigger(RestEvents.BeforeDelete);
+
             return this.backend!.request({
                 method: 'DELETE',
                 url: urlAppend(this.baseURL, this.id)
             }).then(resp => {
-                triggerMethodOn(this, 'delete', this);
+                triggerMethodOn(this, RestEvents.Delete, this);
             });
         }
 
