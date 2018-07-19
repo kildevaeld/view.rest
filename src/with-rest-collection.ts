@@ -4,8 +4,7 @@ import { Model/*, ModelConstructor */, ModelCollection } from '@viewjs/models';
 import { createError, RestErrorCode } from './errors';
 import { backend, IRestRequest, IRestBackend } from './backend';
 import { IRestModel } from './with-rest-model';
-import { urlAppend } from './utils';
-import { withEventListener, IEventListener } from '@viewjs/events';
+import { withEventListener } from '@viewjs/events';
 
 export interface RestCollectionSaveOptions { }
 

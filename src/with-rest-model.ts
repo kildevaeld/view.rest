@@ -72,9 +72,12 @@ export function withRestModel<T extends Constructor<Model>>(Base: T, baseURL?: s
                 url: urlAppend(this.baseURL, this.id)
             }
 
+            this.trigger('before:fetch', req);
+
             return this.backend!.request(req)
                 .then(resp => {
                     this.set(resp);
+                    this.trigger('fetch', resp);
                     this.changes = void 0;
                 });
 
